@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,7 +19,11 @@ namespace ShimojiPlaygroundApp
         private DateTime lastCheckTime;
         private Action returnToEditorAction;
         public bool isReturningToEditor = false;
-        
+        private List<EditorWindow.OverlayFrame> animationFrames;
+        private int frameIndex;
+        private DispatcherTimer animTimer;
+        private Image backgroundImage;
+
         internal static class Win32
         {
             public const int GWL_EXSTYLE = -20;
@@ -48,15 +53,100 @@ namespace ShimojiPlaygroundApp
             );
         }
 
-        public PlaygroundWindow(EditorSettings settings, Action returnToEditor)
+        public PlaygroundWindow(EditorSettings settings, Action returnToEditor, List<EditorWindow.OverlayFrame> frames)
         {
             this.settings = settings;
             this.returnToEditorAction = returnToEditor;
+
+            this.animationFrames = frames;
 
             InitializeWindow();
             InitializeOverlays();
             StartFollowTimer();
             StartPositionCheckTimer();
+
+            if (animationFrames != null && animationFrames.Count > 0)
+                StartOverlayAnimation();
+        }
+        private Window EnsureOverlay(ref Window overlay, bool isVertical, double size)
+        {
+            if (overlay != null) return overlay;
+
+            overlay = new Window
+            {
+                Width = isVertical ? this.Width : size,
+                Height = isVertical ? size : this.Height,
+                WindowStyle = WindowStyle.None,
+                AllowsTransparency = true,
+                Background = Brushes.Transparent,
+                ShowInTaskbar = false,
+                Topmost = false,
+                Content = new Image { Stretch = Stretch.Fill }
+            };
+
+            var hwnd = new System.Windows.Interop.WindowInteropHelper(overlay).EnsureHandle();
+            int exStyle = Win32.GetWindowLong(hwnd, Win32.GWL_EXSTYLE);
+            Win32.SetWindowLong(hwnd, Win32.GWL_EXSTYLE, exStyle | Win32.WS_EX_TOOLWINDOW);
+
+            overlay.Show();
+            return overlay;
+        }
+
+        private void StartOverlayAnimation()
+        {
+            if (animationFrames == null || animationFrames.Count == 0) return;
+
+            frameIndex = 0;
+            animTimer = new DispatcherTimer();
+            animTimer.Tick += (s, e) =>
+            {
+                var frame = animationFrames[frameIndex];
+
+                void SetOverlayImage(
+                    ref Window overlay,
+                    string path,
+                    bool isVertical,
+                    double size
+                )
+                {
+                    if (string.IsNullOrEmpty(path) || !File.Exists(path))
+                        return;
+
+                    overlay = EnsureOverlay(ref overlay, isVertical, size);
+
+                    BitmapImage bmp = new BitmapImage();
+                    bmp.BeginInit();
+                    bmp.CacheOption = BitmapCacheOption.OnLoad;
+                    bmp.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
+                    bmp.EndInit();
+                    bmp.Freeze();
+
+                    ((Image)overlay.Content).Source = bmp;
+                }
+
+                SetOverlayImage(ref topOverlay, frame.TopAnim, true, settings.TopHeight);
+                SetOverlayImage(ref bottomOverlay, frame.BottomAnim, true, settings.BottomHeight);
+                SetOverlayImage(ref leftOverlay, frame.LeftAnim, false, settings.LeftWidth);
+                SetOverlayImage(ref rightOverlay, frame.RightAnim, false, settings.RightWidth);
+
+                if (!string.IsNullOrEmpty(frame.BackgroundAnim) && File.Exists(frame.BackgroundAnim))
+                {
+                    BitmapImage bgBmp = new BitmapImage();
+                    bgBmp.BeginInit();
+                    bgBmp.CacheOption = BitmapCacheOption.OnLoad;
+                    bgBmp.UriSource = new Uri(frame.BackgroundAnim, UriKind.RelativeOrAbsolute);
+                    bgBmp.EndInit();
+                    bgBmp.Freeze();
+
+                    backgroundImage.Source = bgBmp;
+                }
+
+                frameIndex = (frameIndex + 1) % animationFrames.Count;
+                animTimer.Interval = frame.Duration;
+            };
+
+            animTimer.Interval = animationFrames[0].Duration;
+            animTimer.Start();
         }
 
         private void InitializeWindow()
@@ -74,12 +164,19 @@ namespace ShimojiPlaygroundApp
             Grid grid = new Grid();
             if (!string.IsNullOrEmpty(settings.BackgroundPath) && File.Exists(settings.BackgroundPath))
             {
-                Image bg = new Image
+                backgroundImage = new Image
                 {
-                    Source = new BitmapImage(new Uri(settings.BackgroundPath, UriKind.RelativeOrAbsolute)),
                     Stretch = Stretch.Fill
                 };
-                grid.Children.Add(bg);
+
+                if (!string.IsNullOrEmpty(settings.BackgroundPath) && File.Exists(settings.BackgroundPath))
+                {
+                    backgroundImage.Source = new BitmapImage(
+                        new Uri(settings.BackgroundPath, UriKind.RelativeOrAbsolute)
+                    );
+                }
+
+                grid.Children.Add(backgroundImage);
             }
 
             this.Content = grid;

@@ -57,7 +57,15 @@
                     </StackPanel>
 
                     <Border Grid.Column="1" Width="550" BorderBrush="Gray" BorderThickness="0" CornerRadius="30" ClipToBounds="True" Margin="0,0,0,301">
-                        <Image x:Name="PreviewImage" Stretch="Uniform"/>
+                        <Grid>
+                            <Image x:Name="PreviewImage" Stretch="Uniform"/>
+                            
+                            <Image x:Name="TopOverlayImage" Stretch="Fill" VerticalAlignment="Top" Visibility="Hidden"/>
+                            <Image x:Name="BottomOverlayImage" Stretch="Fill" VerticalAlignment="Bottom" Visibility="Hidden"/>
+                            <Image x:Name="LeftOverlayImage" Stretch="Fill" VerticalAlignment="Stretch" Visibility="Hidden"/>
+                            <Image x:Name="RightOverlayImage" Stretch="Fill" VerticalAlignment="Stretch" Visibility="Hidden"/>
+                            <Image x:Name="BackgroundImage" Stretch="Fill" VerticalAlignment="Center" Visibility="Hidden"/>
+                        </Grid>
                     </Border>
                 </Grid>
             </TabItem>

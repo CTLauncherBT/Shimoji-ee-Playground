@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using System.Xml.Serialization;
 using System.Windows.Threading;
-using System.Linq.Expressions;
+using System.Xml.Serialization;
 
 namespace ShimojiPlaygroundApp
 {
@@ -46,6 +47,19 @@ namespace ShimojiPlaygroundApp
         private string settingsFile = "Shimoji-ee_Settings.xml";
         private ObservableCollection<PlaygroundItem> playgrounds = new ObservableCollection<PlaygroundItem>();
         private DispatcherTimer updateTimer;
+        private DispatcherTimer animTimer;
+        private List<OverlayFrame> animationFrames;
+        private int frameIndex;
+
+        public class OverlayFrame
+        {
+            public TimeSpan Duration;
+            public string BackgroundAnim;
+            public string TopAnim;
+            public string LeftAnim;
+            public string RightAnim;
+            public string BottomAnim;
+        }
 
         public EditorWindow()
         {
@@ -203,9 +217,55 @@ namespace ShimojiPlaygroundApp
             return bitmap;
         }
 
+        private List<OverlayFrame> LoadAnimation(string folderPath)
+        {
+            var frames = new List<OverlayFrame>();
+            string animPath = Path.Combine(folderPath, "animation.txt");
+            if (!File.Exists(animPath)) return frames;
+
+            OverlayFrame current = null;
+            foreach (var raw in File.ReadAllLines(animPath))
+            {
+                var line = raw.Trim();
+                if (string.IsNullOrEmpty(line)) continue;
+
+                if (line.StartsWith("sec_"))
+                {
+                    if (current != null) frames.Add(current);
+                    double sec = double.Parse(line.Substring(4), System.Globalization.CultureInfo.InvariantCulture);
+                    current = new OverlayFrame { Duration = TimeSpan.FromSeconds(sec) };
+                }
+                else if (line.StartsWith("TopAnim=")) current.TopAnim = Path.Combine(folderPath, line.Substring("TopAnim=".Length));
+                else if (line.StartsWith("BottomAnim=")) current.BottomAnim = Path.Combine(folderPath, line.Substring("BottomAnim=".Length));
+                else if (line.StartsWith("LeftAnim=")) current.LeftAnim = Path.Combine(folderPath, line.Substring("LeftAnim=".Length));
+                else if (line.StartsWith("RightAnim=")) current.RightAnim = Path.Combine(folderPath, line.Substring("RightAnim=".Length));
+                else if (line.StartsWith("BackgroundAnim=")) current.BackgroundAnim = Path.Combine(folderPath, line.Substring("BackgroundAnim=".Length));
+            }
+            if (current != null) frames.Add(current);
+            return frames;
+        }
+
+        private void OverlayAnimTick(object sender, EventArgs e)
+        {
+            if (animationFrames == null || animationFrames.Count == 0) return;
+
+            var frame = animationFrames[frameIndex];
+
+            TopOverlayImage.Source = LoadBitmap(frame.TopAnim);
+            BottomOverlayImage.Source = LoadBitmap(frame.BottomAnim);
+            LeftOverlayImage.Source = LoadBitmap(frame.LeftAnim);
+            RightOverlayImage.Source = LoadBitmap(frame.RightAnim);
+            BackgroundImage.Source = LoadBitmap(frame.BackgroundAnim);
+
+            frameIndex = (frameIndex + 1) % animationFrames.Count;
+            animTimer.Interval = frame.Duration;
+        }
+
         private void PlaygroundComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (PlaygroundComboBox.SelectedItem is not PlaygroundItem selected) return;
+
+            animationFrames = LoadAnimation(selected.Path);
 
             string folderPath = selected.Path;
 
@@ -371,7 +431,7 @@ namespace ShimojiPlaygroundApp
         private void LaunchPlayground()
         {
             Logger.Info($"Launched the playground: {settings.SelectedPlayground}");
-            PlaygroundWindow pg = new PlaygroundWindow(settings, ReturnFromPlayground);
+            PlaygroundWindow pg = new PlaygroundWindow(settings, ReturnFromPlayground, animationFrames);
             pg.Show();
             this.Hide();
         }
@@ -419,6 +479,7 @@ namespace ShimojiPlaygroundApp
         {
             Logger.Info("Shutting down...");
             base.OnClosed(e);
+            animTimer?.Stop();
             Application.Current.Shutdown();
         }
     }
