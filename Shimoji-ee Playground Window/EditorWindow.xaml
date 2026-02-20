@@ -1,0 +1,96 @@
+<Window x:Class="ShimojiPlaygroundApp.EditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Shimoji-ee Playground - 1.1.3" Height="700" Width="900" Background="#FF111111"
+        ResizeMode="CanMinimize"
+        KeyDown="EditorWindow_KeyDown">
+    <DockPanel>
+        <TabControl x:Name="TabControlMain" DockPanel.Dock="Top" Background="#FF222222" Foreground="White">
+            <TabItem Header="Editor">
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="300"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <StackPanel Orientation="Vertical" Grid.Column="0">
+                        <TextBlock Text="Window Title:" Foreground="White" Margin="0,0,0,5"/>
+                        <TextBox x:Name="WindowTitleTextBox" Width="250" Margin="0,0,0,10" Text="Shimeji Playground"/>
+
+                        <TextBlock Text="Window Size:" Foreground="White" Margin="0,0,0,5"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <TextBox x:Name="WidthTextBox" Width="60" Text="960" Margin="0,0,5,0"/>
+                            <TextBox x:Name="HeightTextBox" Width="60" Text="540"/>
+                        </StackPanel>
+
+                        <TextBlock Text="Playground:" Foreground="White" Margin="0,0,0,5"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <ComboBox x:Name="PlaygroundComboBox" Width="180" SelectionChanged="PlaygroundComboBox_SelectionChanged">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{Binding Icon}" Width="24" Height="24" Margin="0,0,5,0"/>
+                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Button Content="Open" Width="50" Margin="5,0,0,0" Click="OpenPlaygroundsFolder_Click"/>
+                        </StackPanel>
+                        <TextBox x:Name="TopOverlayText" Visibility="Collapsed"/>
+                        <TextBox x:Name="BottomOverlayText" Visibility="Collapsed"/>
+                        <TextBox x:Name="LeftOverlayText" Visibility="Collapsed"/>
+                        <TextBox x:Name="RightOverlayText" Visibility="Collapsed"/>
+                        <TextBox x:Name="BackgroundText" Visibility="Collapsed"/>
+                        <TextBlock Text="Top Height (px):" Foreground="White" Margin="0,5,0,5"/>
+                        <TextBox x:Name="TopHeightText" Width="60" Margin="0,0,0,10" Text="100"/>
+                        <TextBlock Text="Bottom Height (px):" Foreground="White" Margin="0,5,0,5"/>
+                        <TextBox x:Name="BottomHeightText" Width="60" Margin="0,0,0,10" Text="100"/>
+                        <TextBlock Text="Left Width (px):" Foreground="White" Margin="0,5,0,5"/>
+                        <TextBox x:Name="LeftWidthText" Width="60" Margin="0,0,0,10" Text="50"/>
+                        <TextBlock Text="Right Width (px):" Foreground="White" Margin="0,5,0,5"/>
+                        <TextBox x:Name="RightWidthText" Width="60" Margin="0,0,0,10" Text="50"/>
+                        <CheckBox x:Name="TopMostMainWindowCheckbox" Content="Playground topmost" Foreground="White" Margin="0,10,0,0" Height="14" Width="248"/>
+                        <CheckBox x:Name="StartDirectPlaygroundCheckBox" Content="Skip Editor and start Playground" Foreground="White" Margin="0,10,0,0" Height="14" Width="248"/>
+                        <Button x:Name="ResetDefaultsButton" Content="Reset to default" Width="250" Height="20" Margin="0,10,0,0" Click="ResetDefaults_Click"/>
+                        <Button x:Name="SaveSettingsButton" Content="Save" Width="250" Height="20" Margin="0,2,0,0" Click="SaveSettingsButton_Click"/>
+                    </StackPanel>
+
+                    <Border Grid.Column="1" Width="550" BorderBrush="Gray" BorderThickness="0" CornerRadius="30" ClipToBounds="True" Margin="0,0,0,301">
+                        <Image x:Name="PreviewImage" Stretch="Uniform"/>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Playground">
+                <StackPanel Margin="10">
+                    <Button x:Name="RunButton" Content="Run" Width="120" Click="RunButton_Click"/>
+                    <TextBlock Text="Use: Control + X to return to editor" Margin="0,10,0,0" FontStyle="Italic" Foreground="White"/>
+                    <TextBlock Text="Tip: Change in the Shimeji Settings 'InteractiveWindows=' to 'InteractiveWindows=Shimoji Playground' (The Window Titel in Editor)" Margin="0,10,0,0" FontStyle="Italic" Foreground="White"/>
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Help">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Shortcuts:" Margin="0,10,0,0" FontStyle="Italic" Foreground="White"/>
+                    <TextBlock Text="      -> Control + X to return to editor" Margin="0,10,0,0" FontStyle="Italic" Foreground="White"/>
+                    <TextBlock Text="      -> Control + R to run the playground" Margin="0,3,0,0" FontStyle="Italic" Foreground="White"/>
+                    <TextBlock Text="      -> Control + S to save settings" Margin="0,3,0,0" FontStyle="Italic" Foreground="White"/>
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Credits">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Developer:" Margin="0,10,0,0" FontStyle="Italic" Foreground="White"/>
+                    <TextBlock Text="           ZonBock1337 (X: @ctlauncherbt)" Margin="0,3,0,0" FontStyle="Italic" Foreground="White"/>
+                    <TextBlock Text="Character (Neuro and Evil):" Margin="0,10,0,0" FontStyle="Italic" Foreground="White"/>
+                    <TextBlock Text="           paccha (X: @paccha_7)" Margin="0,3,0,0" FontStyle="Italic" Foreground="White"/>
+                    <TextBlock Text="Character (Vedal):" Margin="0,10,0,0" FontStyle="Italic" Foreground="White"/>
+                    <TextBlock Text="           monikaphobia (X: @monikaphobia)" Margin="0,3,0,0" FontStyle="Italic" Foreground="White"/>
+                    <TextBlock Text="Playground (Scrubland):" Margin="0,10,0,0" FontStyle="Italic" Foreground="White"/>
+                    <TextBlock Text="           Sank (X: @sangart1017839)" Margin="0,3,0,0" FontStyle="Italic" Foreground="White"/>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

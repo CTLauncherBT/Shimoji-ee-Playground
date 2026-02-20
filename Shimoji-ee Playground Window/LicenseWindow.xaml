@@ -1,0 +1,34 @@
+<Window x:Class="ShimojiPlaygroundApp.LicenseWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="License Agreement"
+        Width="570" Height="358"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="#1E1E1E"
+        Foreground="#EAEAEA">
+
+	<Grid Margin="16">
+		<Grid.RowDefinitions>
+			<RowDefinition/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+
+		<Border Background="#252526" CornerRadius="8" Padding="12">
+			<ScrollViewer VerticalScrollBarVisibility="Auto">
+				<TextBlock TextWrapping="Wrap" FontSize="13"><Run Text="By continuing, you agree that the default playground is provided for personal use only."/><LineBreak/><Run/><LineBreak/><Run Text="You may NOT:"/><LineBreak/><Run Text="• Redistribute or resell the default playground"/><LineBreak/><Run Text="• Publish it online as part of a commercial product"/><LineBreak/><Run Text="• Claim ownership of the default playground assets"/><LineBreak/><Run/><LineBreak/><Run Text="You MAY:"/><LineBreak/><Run Text="• Modify it for personal use"/><LineBreak/><Run Text="• Use it locally and privately"/><LineBreak/><Run/><LineBreak/><Run Text="This agreement applies only to the default playground"/><Run Text=" "/><Run Language="de-de" Text="i"/><Run Text="ncluded with the"/><Run Text=" "/><Run Text="application."/></TextBlock>
+			</ScrollViewer>
+		</Border>
+
+		<CheckBox x:Name="AgreeCheckBox"
+                  Grid.Row="1"
+                  Content="I have read and agree to the license terms"
+                  Margin="4,12,0,8"/>
+
+		<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+			<Button Content="Disagree" Width="100" Margin="0,0,10,0" Click="Disagree_Click"/>
+			<Button Content="Agree" Width="100" IsEnabled="False" x:Name="AgreeButton" Click="Agree_Click"/>
+		</StackPanel>
+	</Grid>
+</Window>

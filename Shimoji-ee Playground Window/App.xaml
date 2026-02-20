@@ -1,0 +1,10 @@
+﻿<Application x:Class="Shimoji_ee_Playground_Window.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Shimoji_ee_Playground_Window"
+             StartupUri="EditorWindow.xaml"
+             ShutdownMode="OnExplicitShutdown">
+    <Application.Resources>
+         
+    </Application.Resources>
+</Application>
