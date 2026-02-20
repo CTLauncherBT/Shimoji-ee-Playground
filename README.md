@@ -59,6 +59,8 @@ After the official release (**1.1.0**)<br>
 **Shimoji-ee Playground** will have a
 Linux version
 
+Or not, i dont know how to do this for Linux.
+
 <img width="6912" height="3456" alt="Previews" src="https://github.com/user-attachments/assets/e522bf0d-6ee0-47b5-b747-f86073d34857" />
 
 **Interface/UI**<br>
