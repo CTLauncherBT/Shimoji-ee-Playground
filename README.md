@@ -49,7 +49,7 @@ it should look like this:
 
 <img width="989" height="317" alt="anim-preview" src="https://github.com/user-attachments/assets/5ac61698-378e-4744-83f5-e93d142ff76f" />
 
-the anim variables are:<br>
+the animation variables are:<br>
 `TopAnim=` for the top overlay<br>
 `LeftAnim=` for the left overlay<br>
 `RightAnim=` for the right overlay<br>
