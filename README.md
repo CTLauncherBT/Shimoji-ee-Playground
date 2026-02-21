@@ -35,6 +35,29 @@ also the **settings.txt**
 `LeftWidth=960` change the left window width size<br>
 `RightWidth=960` change the right window width size
 
+**ANIMATION FEATURE**
+
+In the v1.1.3 we added the animation feature for Shimoji-ee!
+
+How it works:<br>
+There is a animation.txt and some frames as example<br>
+now we rename our frames to like frame_1..2..3..4<br>
+then we put it in a folder or not, how you want!<br>
+
+then we create in the playground folder a animation.txt file<br>
+it should look like this:
+
+<img width="989" height="317" alt="anim-preview" src="https://github.com/user-attachments/assets/5ac61698-378e-4744-83f5-e93d142ff76f" />
+
+the anim variables are:<br>
+`TopAnim=`<br>
+`LeftAnim=`<br>
+`RightAnim=`<br>
+`BottomAnim=`<br>
+and also the background!<br>
+`BackgroundAnim=`
+
+
 ![playground-selection](https://github.com/user-attachments/assets/59c25246-bd5d-43d7-b4eb-a8f89b7ad852)
 
 Please report bugs!^^
