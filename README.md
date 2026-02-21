@@ -50,13 +50,29 @@ it should look like this:
 <img width="989" height="317" alt="anim-preview" src="https://github.com/user-attachments/assets/5ac61698-378e-4744-83f5-e93d142ff76f" />
 
 the anim variables are:<br>
-`TopAnim=`<br>
-`LeftAnim=`<br>
-`RightAnim=`<br>
-`BottomAnim=`<br>
+`TopAnim=` for the top overlay<br>
+`LeftAnim=` for the left overlay<br>
+`RightAnim=` for the right overlay<br>
+`BottomAnim=`for the bottom overlay<br>
 and also the background!<br>
-`BackgroundAnim=`
+`BackgroundAnim=` for the background
 
+the sec_x stands for the frames where change it in that second, as example:
+
+======================
+
+sec_1<br>
+TopAnim=IMAGE.PNG<br>
+sec_2.5<br>
+TopAnim-IMAGE_2.PNG
+
+======================
+
+in the first **sec_** it change it to the image you gave, the variable then after 2.5 seconds
+it change it to the IMAGE_2.PNG
+
+thats a little bit complex, we already made a converter for that! (it converts a .mp4 video into frames and also creates the animation.txt)
+You can find it [here](https://github.com/CTLauncherBT/Shimoji-eeAnimator)!
 
 ![playground-selection](https://github.com/user-attachments/assets/59c25246-bd5d-43d7-b4eb-a8f89b7ad852)
 
