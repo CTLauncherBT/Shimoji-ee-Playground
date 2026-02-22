@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -10,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Xml.Serialization;
+using System.Text.RegularExpressions;
 
 namespace ShimojiPlaygroundApp
 {
@@ -50,6 +52,8 @@ namespace ShimojiPlaygroundApp
         private DispatcherTimer animTimer;
         private List<OverlayFrame> animationFrames;
         private int frameIndex;
+        private TabItem appTab;
+        private StackPanel appsStack;
 
         public class OverlayFrame
         {
@@ -73,6 +77,7 @@ namespace ShimojiPlaygroundApp
             checkSkipEditor();
             checkLicenseAccepted();
             ApplySettingsToUI();
+            LoadPluginsTab();
 
             updateTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             updateTimer.Tick += (s, e) => LoadPlaygrounds();
@@ -201,6 +206,98 @@ namespace ShimojiPlaygroundApp
             {
                 var savedPg = playgrounds.FirstOrDefault(p => p.Name == settings.SelectedPlayground);
                 PlaygroundComboBox.SelectedItem = savedPg ?? playgrounds.First();
+            }
+        }
+
+        private void LoadPluginsTab() // plugin support
+        {
+            string appsRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "apps");
+            if (!Directory.Exists(appsRoot)) Directory.CreateDirectory(appsRoot);
+
+            var appsDirs = Directory.GetDirectories(appsRoot)
+                                      .Where(d => File.Exists(Path.Combine(d, "entry.py")))
+                                      .ToList();
+
+            if (!appsDirs.Any()) return;
+
+            TabItem appsTab = new TabItem { Header = "Apps" };
+
+            WrapPanel wrap = new WrapPanel
+            {
+                Margin = new Thickness(10),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                ItemWidth = 150,
+                ItemHeight = 200,
+                Orientation = Orientation.Horizontal
+            };
+
+            appsTab.Content = new ScrollViewer
+            {
+                Content = wrap,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+            };
+
+            TabControlMain.Items.Add(appsTab);
+
+            foreach (var dir in appsDirs)
+            {
+                string appName = Path.GetFileName(dir);
+                string entryPath = Path.Combine(dir, "entry.py");
+                string iconPath = Path.Combine(dir, "icon.png");
+
+                Border border = new Border
+                {
+                    CornerRadius = new CornerRadius(8),
+                    Margin = new Thickness(5),
+                    Padding = new Thickness(5),
+                    Background = System.Windows.Media.Brushes.Transparent,
+                    Width = 150,
+                    Height = 200
+                };
+
+                StackPanel panel = new StackPanel
+                {
+                    Orientation = Orientation.Vertical,
+                    HorizontalAlignment = HorizontalAlignment.Center
+                };
+
+                TextBlock nameText = new TextBlock
+                {
+                    Text = appName,
+                    Foreground = System.Windows.Media.Brushes.Black,
+                    FontWeight = FontWeights.Bold,
+                    TextAlignment = TextAlignment.Center,
+                    Margin = new Thickness(0, 0, 0, 5),
+                    TextWrapping = TextWrapping.Wrap
+                };
+                panel.Children.Add(nameText);
+
+                if (File.Exists(iconPath))
+                {
+                    Image icon = new Image
+                    {
+                        Source = LoadBitmap(iconPath),
+                        Width = 110,
+                        Height = 110,
+                        Margin = new Thickness(0, 0, 0, 5)
+                    };
+                    panel.Children.Add(icon);
+                }
+
+                Button runButton = new Button
+                {
+                    Content = "Open app",
+                    Width = 80,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    Tag = entryPath
+                };
+                runButton.Click += RunApp_Click;
+                panel.Children.Add(runButton);
+
+                border.Child = panel;
+                wrap.Children.Add(border);
             }
         }
 
@@ -457,6 +554,79 @@ namespace ShimojiPlaygroundApp
             Logger.Info("Returned to Editor");
             this.Show();
         }
+
+        private void RunApp_Click(object sender, RoutedEventArgs e) // running python script (disabled console (CreateNoWindow = true))
+        {
+            if (sender is not Button btn) return;
+            string entryPath = btn.Tag as string;
+            if (!File.Exists(entryPath))
+            {
+                MessageBox.Show("entry.py not found!");
+                Logger.Error("entry.py not found in " + entryPath);
+                return;
+            }
+
+            string appName = Path.GetFileName(Path.GetDirectoryName(entryPath));
+            string safeName = "Output_" + Regex.Replace(appName, @"[^\w]", ""); // safename for safe start (without it crash or im dumb because last time it worked)
+            TextBox outputBox = FindName(safeName) as TextBox;
+
+            try
+            {
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = "python",
+                    Arguments = $"\"{entryPath}\"",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
+
+                Process proc = new Process { StartInfo = psi };
+                proc.OutputDataReceived += (s, args) =>
+                {
+                    if (args.Data != null)
+                    {
+                        Dispatcher.Invoke(() => MessageBox.Show(args.Data + "\n"));
+                    }
+                };
+                proc.ErrorDataReceived += (s, args) =>
+                {
+                    if (args.Data != null)
+                    {
+                        Dispatcher.Invoke(() => MessageBox.Show("[ERROR] " + args.Data + "\n"));
+                    }
+                };
+
+                Logger.Info("Running app: " + appName + " | Path: " + entryPath);
+
+                proc.Start();
+                proc.BeginOutputReadLine();
+                proc.BeginErrorReadLine();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("[EXCEPTION] " + ex.Message + "\n");
+                Logger.Error("[EXCEPTION] " + ex.Message + "\n");
+            }
+        }
+
+        private void DragBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ButtonState == MouseButtonState.Pressed)
+                this.DragMove();
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Minimize_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
         private void EditorWindow_KeyDown(object sender, KeyEventArgs e)
         {
             if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control) && e.Key == Key.X)

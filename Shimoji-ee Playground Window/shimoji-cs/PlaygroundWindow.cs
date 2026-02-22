@@ -24,7 +24,7 @@ namespace ShimojiPlaygroundApp
         private DispatcherTimer animTimer;
         private Image backgroundImage;
 
-        internal static class Win32
+        internal static class Win32 // idk should work, found that in docs
         {
             public const int GWL_EXSTYLE = -20;
             public const int WS_EX_TOOLWINDOW = 0x00000080;
@@ -92,7 +92,7 @@ namespace ShimojiPlaygroundApp
             return overlay;
         }
 
-        private void StartOverlayAnimation()
+        private void StartOverlayAnimation() // FPS Animation
         {
             if (animationFrames == null || animationFrames.Count == 0) return;
 
@@ -149,7 +149,7 @@ namespace ShimojiPlaygroundApp
             animTimer.Start();
         }
 
-        private void InitializeWindow()
+        private void InitializeWindow() // OwO?
         {
             this.Title = settings.WindowTitle;
             this.Width = settings.WindowWidth;
@@ -201,7 +201,7 @@ namespace ShimojiPlaygroundApp
             }
         }
 
-        private void InitializeOverlays()
+        private void InitializeOverlays() // Nahh its the same like OwO?
         {
             topOverlay = CreateOverlay(settings.TopOverlayPath, settings.TopHeight, true);
             bottomOverlay = CreateOverlay(settings.BottomOverlayPath, settings.BottomHeight, true);
@@ -236,7 +236,7 @@ namespace ShimojiPlaygroundApp
             return overlay;
         }
 
-        private void StartFollowTimer()
+        private void StartFollowTimer() // Follow?
         {
             followTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(30) };
             followTimer.Tick += (s, e) => UpdateOverlayPositions();
@@ -251,7 +251,7 @@ namespace ShimojiPlaygroundApp
             if (rightOverlay != null) { rightOverlay.Left = Left + Width; rightOverlay.Top = Top; rightOverlay.Height = Height; }
         }
 
-        private void StartPositionCheckTimer()
+        private void StartPositionCheckTimer() // nooop
         {
             checkPositionTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
             checkPositionTimer.Tick += (s, e) =>
@@ -262,7 +262,7 @@ namespace ShimojiPlaygroundApp
             checkPositionTimer.Start();
         }
 
-        private void CheckWindowPosition()
+        private void CheckWindowPosition() // like the func name
         {
             var screen = SystemParameters.WorkArea;
             bool outOfScreen = Left + Width < 0 || Top + Height < 0 || Left > screen.Right || Top > screen.Bottom;

@@ -27,7 +27,7 @@ namespace ShimojiPlaygroundApp
         private void Disagree_Click(object sender, RoutedEventArgs e)
         {
             Logger.Warn($"License not accepted: {settings.AcceptedPlaygroundLicense}");
-            Logger.Info("Shutting down application");
+            Logger.Info("Shutting down application...");
             Accepted = false;
             Close();
         }

@@ -111,12 +111,7 @@
     <Resource Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="ressources\textures\buttons\reset_to_default.png" />
-    <Resource Include="ressources\textures\buttons\safe.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="ressources\textures\checkboxes\checked.png" />
-    <Resource Include="ressources\textures\checkboxes\unchecked.png" />
+    <Folder Include="ressources\textures\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
