@@ -41,7 +41,7 @@ In the v1.1.3 we added the animation feature for Shimoji-ee!
 
 How it works:<br>
 There is a animation.txt and some frames as example<br>
-now we rename our frames to like frame_1..2..3..4<br>
+now we rename our frames to like frame_1..2..3..4.png<br>
 then we put it in a folder or not, how you want!<br>
 
 then we create in the playground folder a animation.txt file<br>
