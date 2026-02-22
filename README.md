@@ -114,7 +114,7 @@ Or not, i dont know how to do this for Linux.
 ✦ vedal by [@monikaphobia](https://x.com/Monikaphobia)<br>
 ✦ Scrubland Playground by [[@sank](https://x.com/SangArt1017839)]
 
-For more info or for download check this [post](https://x.com/Monikaphobia/status/1844272129619132682?s=20)!
+For more info or for Neurolings download check this [post](https://x.com/Monikaphobia/status/1844272129619132682?s=20)!
 
 If you have issues with that, please dm [me](https://x.com/CTLauncherBT) on [X/Twitter](https://x.com/)<br>
 Contact: [@ctlauncherbt](https://x.com/CTLauncherBT)
