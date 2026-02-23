@@ -127,14 +127,7 @@ and to Sankyu! thank you for the amazing playground!
 
 # Open Source
 **Shimoji-ee Playground** is open source!
-If you fork this please **credit** me!
-
-Credit:
-https://x.com/CTLauncherBT
-
-In some places, I didn't write particularly good code,<br>
-there were days when I wasn't feeling well.<br>
-I will fix the errors in future updates.
+If you fork this please **credit** thos project!
 
 <img width="6912" height="3456" alt="Have fun!" src="https://github.com/user-attachments/assets/417a5054-ac6d-4ef5-b7d5-9308774603ad" />
 
