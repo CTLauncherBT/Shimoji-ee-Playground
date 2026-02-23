@@ -131,5 +131,5 @@ If you fork this please **credit** thos project!
 
 <img width="6912" height="3456" alt="Have fun!" src="https://github.com/user-attachments/assets/417a5054-ac6d-4ef5-b7d5-9308774603ad" />
 
-This App was made for "Neurolings" but you can use it for other Shimeji's if you want!
+This App was made for "[Neurolings](https://x.com/Monikaphobia/status/1844272129619132682?s=20)" but you can use it for other Shimeji's if you want!
 I hope you like this project!
