@@ -1,5 +1,7 @@
-﻿using Shimoji_ee_Playground_Window.Properties;
+﻿using Microsoft.Win32;
+using System.Net.Http;
 using System.Windows;
+using System.Windows.Input;
 
 namespace ShimojiPlaygroundApp
 {
@@ -22,7 +24,7 @@ namespace ShimojiPlaygroundApp
             Logger.Info("Loading EditorWindow...");
             Accepted = true;
             Close();
-        }
+        } 
 
         private void Disagree_Click(object sender, RoutedEventArgs e)
         {
@@ -30,6 +32,12 @@ namespace ShimojiPlaygroundApp
             Logger.Info("Shutting down application...");
             Accepted = false;
             Close();
+        }
+
+        private void DragBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ButtonState == MouseButtonState.Pressed)
+                this.DragMove();
         }
     }
 }
