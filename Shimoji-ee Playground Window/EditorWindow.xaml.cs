@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Policy;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Xml.Serialization;
-using System.Text.RegularExpressions;
 
 namespace ShimojiPlaygroundApp
 {
@@ -34,6 +37,7 @@ namespace ShimojiPlaygroundApp
         public bool MainWindowTopMost = true;
         public string BackgroundPath = "playgrounds/Scrubland Playground/assets/main/playground.png";
         public bool AcceptedPlaygroundLicense = false;
+        public bool CheckedTutorial = false;
     }
 
     public class PlaygroundItem
@@ -46,7 +50,7 @@ namespace ShimojiPlaygroundApp
     public partial class EditorWindow : Window
     {
         private EditorSettings settings;
-        private string settingsFile = "Shimoji-ee_Settings.xml";
+        private string settingsFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Shimoji-ee", "Settings.xml");
         private ObservableCollection<PlaygroundItem> playgrounds = new ObservableCollection<PlaygroundItem>();
         private DispatcherTimer updateTimer;
         private DispatcherTimer animTimer;
@@ -74,8 +78,9 @@ namespace ShimojiPlaygroundApp
 
             LoadSettings();
             LoadPlaygrounds();
-            checkSkipEditor();
-            checkLicenseAccepted();
+            CheckSkipEditor();
+            CheckLicenseAccepted();
+            CheckTutorial();
             ApplySettingsToUI();
             LoadPluginsTab();
 
@@ -99,7 +104,7 @@ namespace ShimojiPlaygroundApp
             else settings = new EditorSettings();
         }
 
-        private void SaveSettings()
+        public void SaveSettings()
         {
             if (MessageBox.Show("Save settings? (can't be undo)", "Save Settings", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
@@ -128,7 +133,7 @@ namespace ShimojiPlaygroundApp
             }
         }
 
-        private void checkLicenseAccepted()
+        private void CheckLicenseAccepted()
         {
             if (!settings.AcceptedPlaygroundLicense)
             {
@@ -147,6 +152,25 @@ namespace ShimojiPlaygroundApp
             XmlSerializer serializer = new XmlSerializer(typeof(EditorSettings));
             using var stream = File.Create(settingsFile);
             serializer.Serialize(stream, settings);
+        }
+
+        private void CheckTutorial()
+        {
+            if (!settings.CheckedTutorial)
+            {
+                TutorialWindow tutorial = new TutorialWindow(settings);
+
+                tutorial.Closed += (s, e) =>
+                {
+                    settings.CheckedTutorial = tutorial.CheckedTutorial;
+
+                    XmlSerializer serializer = new XmlSerializer(typeof(EditorSettings));
+                    using var stream = File.Create(settingsFile);
+                    serializer.Serialize(stream, settings);
+                };
+
+                tutorial.Show();
+            }
         }
 
         private void ApplySettingsToUI()
@@ -534,7 +558,7 @@ namespace ShimojiPlaygroundApp
         }
 
         private void SaveSettingsButton_Click(object sender, RoutedEventArgs e) => SaveSettings();
-        private void checkSkipEditor()
+        private void CheckSkipEditor()
         {
             if (settings.StartDirectPlayground)
             {
@@ -567,8 +591,6 @@ namespace ShimojiPlaygroundApp
             }
 
             string appName = Path.GetFileName(Path.GetDirectoryName(entryPath));
-            string safeName = "Output_" + Regex.Replace(appName, @"[^\w]", ""); // safename for safe start (without it crash or im dumb because last time it worked)
-            TextBox outputBox = FindName(safeName) as TextBox;
 
             try
             {
